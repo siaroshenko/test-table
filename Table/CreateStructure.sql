@@ -1,0 +1,29 @@
+SET QUOTED_IDENTIFIER ON;
+
+CREATE TABLE dbo.SKU(
+  ID INT IDENTITY(1, 1) PRIMARY KEY,
+  Code AS ('s' + CAST(ID AS NVARCHAR(50))) PERSISTED,
+  Name NVARCHAR(50),
+  UNIQUE (Code)
+);
+
+CREATE TABLE dbo.Family(
+  ID INT IDENTITY(1, 1) PRIMARY KEY,
+  SurName NVARCHAR(50),
+  BudgetValue DECIMAL (20, 2)
+);
+
+CREATE TABLE dbo.Basket(
+  ID INT IDENTITY(1, 1) PRIMARY KEY,
+  ID_SKU INT,
+  ID_Family INT,
+  Quantity INT CHECK (Quantity >= 0),
+  Value DECIMAL(20, 2) CHECK (Value >= 0),
+  PurchaseDate DATE,
+  DiscountValue DECIMAL(20, 2),
+  FOREIGN KEY (ID_SKU) REFERENCES dbo.SKU(ID),
+  FOREIGN KEY (ID_Family) REFERENCES dbo.Family(ID)
+);
+
+
+  
