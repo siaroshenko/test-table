@@ -1,17 +1,19 @@
-CREATE PROCEDURE dbo.usp_MakeFamilyPurchase
-  @FamilySurName VARCHAR(255)
-AS
-BEGIN
-  DECLARE @FamilyID INT;
+create procedure dbo.usp_MakeFamilyPurchase
+	@FamilySurName varchar(255)
+as
+begin
+	declare @FamileID int;
+
+	if not exists (select * from dbo.Family where SurName = @FamilySurName)
+	begin
+		raiserror('Family with SurName "%s" not found.', 16, 1, @FamilySurName);
+
+		return;
+	end
+
+	update dbo.Family
+	set BudgetValue = (select sum(Value) from dbo.Basket where ID_Family = Family.ID)
+	from dbo.Family
+	where Family.Surname = @FamilySurName;
   
-  SELECT @FamilyID = ID FROM dbo.Family
-  WHERE SurName = @FamilySurName;
-  
-  IF @FamilyID IS NULL
-    RAISERROR('Family with SurName "%s" not found.', 16, 1, @FamilySurName);
-  ELSE
-    UPDATE dbo.Family
-    SET BudgetValue = (SELECT SUM(Value) FROM dbo.Basket WHERE ID_Family = @FamilyID)
-    WHERE ID = @FamilyID;
-  
-END;
+end;
